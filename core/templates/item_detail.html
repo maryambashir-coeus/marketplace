@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Item Details{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ item.name }}</h1>
+    <img src="{{ item.image.url }}" class="img-fluid" alt="{{ item.name }}">
+    <p>{{ item.description }}</p>
+    <p>Price: {{ item.price }}</p>
+    <p>Seller: {{ item.seller.username }}</p>
+    {% if item.seller != user %}
+    <form action="{% url 'purchase_item' item.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Buy Now</button>
+    </form>
+    {% else %}
+    <p>You cannot purchase your own item.</p>
+    {% endif %}
+    <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
+</div>
+{% endblock %}

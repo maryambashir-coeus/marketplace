@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Order History{% endblock %}
+
+{% block content %}
+<h1>Order History</h1>
+
+{% if purchases %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Price</th>
+                <th>Purchase Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for purchase in purchases %}
+                <tr>
+                    <td>{{ purchase.item.name }}</td>
+                    <td>${{ purchase.item.price }}</td>
+                    <td>{{ purchase.purchase_date|date:"F j, Y, g:i a" }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>You haven't purchased anything yet.</p>
+{% endif %}
+{% endblock %}
