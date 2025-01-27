@@ -1,41 +1,9 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import logout
 from .forms.addItemForm import AddItemForm
-from .forms.signup import SignUpForm
-from .forms.login import LoginForm
 from django.contrib.auth.decorators import login_required
-from .forms.profile import ProfileForm, UserForm
-from .models import Purchase, Item, Profile
-
-# Create your views here.
-
-def user_signup(request):
-    if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('login')
-    else:
-        form = SignUpForm()
-    return render(request, 'signup.html', {'form': form})
-
-
-def user_login(request):
-    if request.method == 'POST':
-        form = LoginForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('home')
-            else:
-                form.add_error(None, "Invalid username or password")
-    else:
-        form = LoginForm()
-    return render(request, 'login.html', {'form': form})
+from .models import Purchase, Item
 
 def home(request):
     query = request.GET.get('search', '')
@@ -48,28 +16,6 @@ def home(request):
 def item_detail(request, item_id):
     item = get_object_or_404(Item, id=item_id)
     return render(request, 'item_detail.html', {'item': item})
-
-@login_required
-def profile(request):
-    user = request.user
-    profile = get_object_or_404(Profile, user=user)
-
-    if request.method == 'POST':
-        user_form = UserForm(request.POST, instance=user)
-        profile_form = ProfileForm(request.POST, request.FILES, instance=profile)
-
-        if user_form.is_valid() and profile_form.is_valid():
-            user_form.save()
-            profile_form.save()
-            return redirect('profile')
-    else:
-        user_form = UserForm(instance=user)
-        profile_form = ProfileForm(instance=profile)
-
-    return render(request, 'profile.html', {
-        'user_form': user_form,
-        'profile_form': profile_form,
-    })
 
 @login_required
 def add_item(request):
